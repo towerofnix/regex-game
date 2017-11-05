@@ -1,0 +1,68 @@
+<meta charset="utf-8">
+<title>regex game</title>
+<textarea id="base-code" placeholder="input (optional)"></textarea>
+<textarea id="target-result" placeholder="target output"></textarea>
+<p>
+  <button id="add-regex">add regex</button>
+  <button id="go">go</button>
+  <button id="go-again">go again</button>
+  status: <span id="status">not run yet</span>
+</p>
+<div id="regexes"></div>
+<script>
+const regexes = []
+let result
+document.getElementById('add-regex').addEventListener('click', () => {
+  const container = document.createElement('div')
+  const ta = (pl, tag = 'textarea') => {
+    const el = document.createElement(tag)
+    el.placeholder = pl
+    container.appendChild(el)
+    return el
+  }
+  const regexTA = ta('regex')
+  const replaceTA = ta('replace string')
+  const outputTA = ta('output')
+  const flagIn = ta('regex flags (optional)', 'input')
+  void [regexTA, flagIn, replaceTA, outputTA].forEach(x => container.appendChild(x))
+  document.getElementById('regexes').appendChild(container)
+
+  regexes.push({
+    go: function(str) {
+      const re = new RegExp(regexTA.value, flagIn.value)
+      const replace = replaceTA.value
+      const out = str.replace(re, replace)
+      outputTA.value = out
+      return out
+    }
+  })
+})
+
+function go() {
+  const status = document.getElementById('status')
+  try {
+    result = regexes.reduce((str, reObj) => reObj.go(str), result)
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      status.innerHTML = 'bad regex: ' + error.message
+      return
+    } else {
+      throw error
+    }
+  }
+  if (result === document.getElementById('target-result').value) {
+    status.innerHTML = 'nice, true'
+  } else {
+    status.innerHTML = 'no that is not a match'
+  }
+}
+
+document.getElementById('go').addEventListener('click', () => {
+  result = document.getElementById('base-code').value
+  go()
+})
+
+document.getElementById('go-again').addEventListener('click', () => {
+  go()
+})
+</script>

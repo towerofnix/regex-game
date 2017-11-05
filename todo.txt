@@ -1,0 +1,2 @@
+A game where you have to construct text, using only regex find/replaces.
+Your goal is to do it in the least regex characters possible.
